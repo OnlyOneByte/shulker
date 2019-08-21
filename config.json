@@ -18,7 +18,8 @@
     "ALLOW_USER_MENTIONS": false,
 
     "WEBHOOK": "/minecraft/hook",
-    "REGEX_MATCH_CHAT_MC": "\\[Server thread/INFO\\]: <([^>]*)> (.*)",
+    "REGEX_MATCH_USER_CHAT_MC": "\\[Server thread\\/INFO\\] \\[net\\.minecraft\\.server\\.dedicated\\.DedicatedServer\\]: <([^>]*)> (.*)",
+    "REGEX_MATCH_STATUS_CHAT_MC": "\\[Server thread\\/INFO\\] \\[net\\.minecraft\\.server\\.dedicated\\.DedicatedServer\\]: (.*)",
     "REGEX_IGNORED_CHAT": "packets too frequently",
     "RCON_RECONNECT_DELAY": 10,
     "DEBUG": false

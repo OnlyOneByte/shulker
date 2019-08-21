@@ -28,7 +28,7 @@ function fixMCText(text) {
 
 
 // replace mentions with discriminator with the actual mention
-function replaceDiscordMentions (message) {
+function replaceDiscordMentions(message) {
   if (c.ALLOW_USER_MENTIONS) {
     const possibleMentions = message.match(/@(\S+)/gim)
     if (possibleMentions) {
@@ -50,7 +50,7 @@ function replaceDiscordMentions (message) {
 
 
 // Makes the actual message sent in discord channel.
-function makeDiscordUserMessage (username, message) {
+function makeDiscordUserMessage(username, message) {
   // make a discord message string by formatting the configured template with the given parameters
   message = replaceDiscordMentions(message)
 
@@ -62,7 +62,7 @@ function makeDiscordUserMessage (username, message) {
 
 
 // Creates the persona of the MC user in discord using its skin. 
-function makeDiscordWebhook (username, message) {
+function makeDiscordWebhook(username, message) {
   message = replaceDiscordMentions(message)
 
   return {
@@ -75,7 +75,7 @@ function makeDiscordWebhook (username, message) {
 
 
 // Creates the MC message to send in MC chat
-function makeMinecraftTellraw (message) {
+function makeMinecraftTellraw(message) {
   // same as the discord side but with discord message parameters
   const username = emojiStrip(message.author.username)
   const discriminator = message.author.discriminator
@@ -91,7 +91,7 @@ function makeMinecraftTellraw (message) {
 
 
 
-function initApp () {
+function initApp() {
   // run a server if not local
   if (!c.IS_LOCAL_FILE) {
     app = express()
@@ -127,7 +127,7 @@ function initApp () {
 
 
 
-function watch (callback) {
+function watch(callback) {
   if (c.IS_LOCAL_FILE) {
     tail.on('line', function (data) {
       // ensure that this is a message
@@ -149,15 +149,27 @@ function watch (callback) {
 shulker.on('ready', function () {
   watch(function (body) {
     console.log('[INFO] Recieved ' + body)
-    const re = new RegExp(c.REGEX_MATCH_CHAT_MC)
-    const ignored = new RegExp(c.REGEX_IGNORED_CHAT)
+    const userRe = new RegExp(c.REGEX_MATCH_USER_CHAT_MC)
+    const statusRe = new RegExp(c.REG_MATCH_STATUS_CHAT_MC)
 
+    messageToDisc = false
 
-    
-    if (!ignored.test(body)) {
-      const bodymatch = body.match(re)
+    // if an MC user sends message. 
+    if (userRe.test(body)) {
+      const bodymatch = body.match(userRe)
       const username = fixMCText(bodymatch[1])
       const message = fixMCText(bodymatch[2])
+      messageToDisc = true
+    }
+
+    // if MC status message (Player joins, leaves, dies, etc.)
+    else if(statusRe.test(body)){
+      
+    }
+
+
+    // sends a message top Discord.
+    if (messageToDisc) {
       if (debug) {
         console.log('[DEBUG] Username: ' + username)
         console.log('[DEBUG] Text: ' + message)
@@ -167,16 +179,17 @@ shulker.on('ready', function () {
         axios.post(c.WEBHOOK_URL, {
           ...webhook
         }, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
       } else {
         // find the channel
         const channel = shulker.channels.find((ch) => ch.id === c.DISCORD_CHANNEL_ID && ch.type === 'text')
         channel.send(makeDiscordUserMessage(username, message))
       }
     }
+
   })
 })
 
