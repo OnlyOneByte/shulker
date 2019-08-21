@@ -10,7 +10,7 @@
     "MINECRAFT_SERVER_RCON_IP": "127.0.0.1",
     "MINECRAFT_SERVER_RCON_PORT": 25575,
     "MINECRAFT_SERVER_RCON_PASSWORD": "password",
-    "MINECRAFT_TELLRAW_TEMPLATE": "[{\"color\": \"white\", \"text\": \"<%username%> %message%\"}]",
+    "MINECRAFT_TELLRAW_TEMPLATE": "[{\"color\": \"purple\", \"text\": \"<%username%> %message%\"}]",
 
     "IS_LOCAL_FILE": false,
     "LOCAL_FILE_PATH": "/usr/home/minecraft_server/logs/latest.log",

@@ -1,5 +1,8 @@
 'use strict'
 
+// TODO: Show Deaths, logins, and disconnects, Discord <media> usage, Discord Nicknames.
+// longterm TODO: refactor codebase completely.
+
 const Discord = require('discord.js')
 const Rcon = require('./lib/rcon.js')
 const express = require('express')
@@ -9,17 +12,20 @@ const { Tail } = require('tail')
 const fs = require('fs')
 
 const configFile = (process.argv.length > 2) ? process.argv[2] : './config.json'
-
 console.log('[INFO] Using configuration file:', configFile)
 
-const c = require(configFile)
 
+const c = require(configFile)
+const debug = c.DEBUG
+const shulker = new Discord.Client()
 let app = null
 let tail = null
 
-function fixUsername (username) {
-  return username.replace(/(§[A-Z-a-z0-9])/g, '')
+// fixes the MC raw chat log by removing some weird characters in both username and text.
+function fixMCText(text) {
+  return text.replace(/(§[A-Z-a-z0-9])/g, '')
 }
+
 
 // replace mentions with discriminator with the actual mention
 function replaceDiscordMentions (message) {
@@ -41,7 +47,10 @@ function replaceDiscordMentions (message) {
   return message
 }
 
-function makeDiscordMessage (username, message) {
+
+
+// Makes the actual message sent in discord channel.
+function makeDiscordUserMessage (username, message) {
   // make a discord message string by formatting the configured template with the given parameters
   message = replaceDiscordMentions(message)
 
@@ -50,6 +59,9 @@ function makeDiscordMessage (username, message) {
     .replace('%message%', message)
 }
 
+
+
+// Creates the persona of the MC user in discord using its skin. 
 function makeDiscordWebhook (username, message) {
   message = replaceDiscordMentions(message)
 
@@ -60,6 +72,9 @@ function makeDiscordWebhook (username, message) {
   }
 }
 
+
+
+// Creates the MC message to send in MC chat
 function makeMinecraftTellraw (message) {
   // same as the discord side but with discord message parameters
   const username = emojiStrip(message.author.username)
@@ -74,8 +89,7 @@ function makeMinecraftTellraw (message) {
     .replace('%message%', variables.text)
 }
 
-const debug = c.DEBUG
-const shulker = new Discord.Client()
+
 
 function initApp () {
   // run a server if not local
@@ -111,6 +125,8 @@ function initApp () {
   }
 }
 
+
+
 function watch (callback) {
   if (c.IS_LOCAL_FILE) {
     tail.on('line', function (data) {
@@ -127,18 +143,24 @@ function watch (callback) {
   }
 }
 
+
+
+// message from MC.
 shulker.on('ready', function () {
   watch(function (body) {
     console.log('[INFO] Recieved ' + body)
     const re = new RegExp(c.REGEX_MATCH_CHAT_MC)
     const ignored = new RegExp(c.REGEX_IGNORED_CHAT)
+
+
+    
     if (!ignored.test(body)) {
       const bodymatch = body.match(re)
-      const username = fixUsername(bodymatch[1])
-      const message = bodymatch[2]
+      const username = fixMCText(bodymatch[1])
+      const message = fixMCText(bodymatch[2])
       if (debug) {
-        console.log('[DEBUG] Username: ' + bodymatch[1])
-        console.log('[DEBUG] Text: ' + bodymatch[2])
+        console.log('[DEBUG] Username: ' + username)
+        console.log('[DEBUG] Text: ' + message)
       }
       if (c.USE_WEBHOOKS) {
         const webhook = makeDiscordWebhook(username, message)
@@ -152,19 +174,22 @@ shulker.on('ready', function () {
       } else {
         // find the channel
         const channel = shulker.channels.find((ch) => ch.id === c.DISCORD_CHANNEL_ID && ch.type === 'text')
-        channel.send(makeDiscordMessage(username, message))
+        channel.send(makeDiscordUserMessage(username, message))
       }
     }
   })
 })
 
+// Message from Discord.
 shulker.on('message', function (message) {
   if (message.channel.id === c.DISCORD_CHANNEL_ID && message.channel.type === 'text') {
     if (c.USE_WEBHOOKS && message.webhookID) {
       return // ignore webhooks if using a webhook
     }
     if (message.author.id !== shulker.user.id) {
-      if (message.attachments.length) { // skip images/attachments
+      if (message.attachments.length) {
+        // skip images/attachments
+        // TODO: add a "<media attached>"
         return
       }
       const client = new Rcon(c.MINECRAFT_SERVER_RCON_IP, c.MINECRAFT_SERVER_RCON_PORT) // create rcon client
