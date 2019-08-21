@@ -143,6 +143,14 @@ function watch(callback) {
       if (data.indexOf(': <') !== -1) {
         callback(data)
       }
+      // joins
+      if (data.indexOf('joined') !== -1) {
+        callback(data)
+      }
+      // leave
+      if (data.indexOf('left') !== -1) {
+        callback(data)
+      }
     })
   } else {
     app.post(c.WEBHOOK, function (request, response) {
