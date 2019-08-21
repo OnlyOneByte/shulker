@@ -12,15 +12,20 @@
     "MINECRAFT_SERVER_RCON_PASSWORD": "password",
     "MINECRAFT_TELLRAW_TEMPLATE": "[{\"color\": \"purple\", \"text\": \"<%username%> %message%\"}]",
 
-    "IS_LOCAL_FILE": false,
+    "IS_LOCAL_FILE": true,
     "LOCAL_FILE_PATH": "/usr/home/minecraft_server/logs/latest.log",
 
-    "ALLOW_USER_MENTIONS": false,
+    "ALLOW_USER_MENTIONS": true,
 
     "WEBHOOK": "/minecraft/hook",
     "REGEX_MATCH_USER_CHAT_MC": "\\[Server thread\\/INFO\\] \\[net\\.minecraft\\.server\\.dedicated\\.DedicatedServer\\]: <([^>]*)> (.*)",
-    "REGEX_MATCH_STATUS_CHAT_MC": "\\[Server thread\\/INFO\\] \\[net\\.minecraft\\.server\\.dedicated\\.DedicatedServer\\]: (.*)",
     "REGEX_IGNORED_CHAT": "packets too frequently",
     "RCON_RECONNECT_DELAY": 10,
+
+    "SERVER_NAME" : "Sevtech Ages",
+    "SERVER_AVATAR_URL" : "https://media.forgecdn.net/avatars/147/67/636574428512291945.png",
+    "SHOW_PLAYER_CONN_STAT" : false,
+    "REGEX_PLAYER_JOIN" : "\\[Server thread\\/INFO\\] \\[net\\.minecraft\\.server\\.dedicated\\.DedicatedServer\\]: (.*) joined the game",
+    "REGEX_PLAYER_LEAVE" : "\\[Server thread\\/INFO\\] \\[net\\.minecraft\\.server\\.dedicated\\.DedicatedServer\\]: (.*) left the game",
     "DEBUG": false
 }

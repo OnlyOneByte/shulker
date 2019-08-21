@@ -72,6 +72,15 @@ function makeDiscordWebhook(username, message) {
   }
 }
 
+// creates the persona of the server telling important information. (Player achievement, connection, deaths, etc.)
+function makeDiscordServerWebhook(message) {
+  return {
+    username: c.SERVER_NAME,
+    content: message,
+    'avatar_url': SERVER_AVATAR_URL
+  }
+}
+
 
 
 // Creates the MC message to send in MC chat
@@ -150,26 +159,16 @@ shulker.on('ready', function () {
   watch(function (body) {
     console.log('[INFO] Recieved ' + body)
     const userRe = new RegExp(c.REGEX_MATCH_USER_CHAT_MC)
-    const statusRe = new RegExp(c.REG_MATCH_STATUS_CHAT_MC)
+    const joinRe = new RegExp(c.REGEX_PLAYER_JOIN)
+    const leaveRe = new RegExp(c.REGEX_PLAYER_LEAVE)
 
-    messageToDisc = false
 
     // if an MC user sends message. 
     if (userRe.test(body)) {
       const bodymatch = body.match(userRe)
       const username = fixMCText(bodymatch[1])
       const message = fixMCText(bodymatch[2])
-      messageToDisc = true
-    }
 
-    // if MC status message (Player joins, leaves, dies, etc.)
-    else if(statusRe.test(body)){
-      
-    }
-
-
-    // sends a message top Discord.
-    if (messageToDisc) {
       if (debug) {
         console.log('[DEBUG] Username: ' + username)
         console.log('[DEBUG] Text: ' + message)
@@ -189,6 +188,42 @@ shulker.on('ready', function () {
         channel.send(makeDiscordUserMessage(username, message))
       }
     }
+
+    // player joins
+    else if (joinRe.test(body)) {
+      const username = fixMCText(bodymatch[1])
+
+      if (debug) {
+        console.log('[Debug]:c' + username + ' has connected to the server')
+      }
+      const webhook = makeDiscordServerWebhook(username + " has joined the server!")
+      axios.post(c.WEBHOOK_URL, {
+        ...webhook
+      }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+    } // end player joins
+
+    // player leaves
+    else if (leaveRe.test(body)) {
+      const username = fixMCText(bodymatch[1])
+
+      if (debug) {
+        console.log('[Debug]:c' + username + ' has left the server')
+      }
+      const webhook = makeDiscordServerWebhook(username + " has left the server. =(")
+      axios.post(c.WEBHOOK_URL, {
+        ...webhook
+      }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+    } // end player leaves
+
+
 
   })
 })
@@ -219,5 +254,9 @@ shulker.on('message', function (message) {
   }
 })
 
+
+
+
+// initialization.
 initApp()
 shulker.login(c.DISCORD_TOKEN)
