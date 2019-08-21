@@ -25,7 +25,7 @@
     "SERVER_NAME" : "Sevtech Ages",
     "SERVER_AVATAR_URL" : "https://media.forgecdn.net/avatars/147/67/636574428512291945.png",
     "SHOW_PLAYER_CONN_STAT" : false,
-    "REGEX_PLAYER_JOIN" : "\\[Server thread\\/INFO\\] \\[net\\.minecraft\\.server\\.dedicated\\.DedicatedServer\\]: (.*) joined the game",
-    "REGEX_PLAYER_LEAVE" : "\\[Server thread\\/INFO\\] \\[net\\.minecraft\\.server\\.dedicated\\.DedicatedServer\\]: (.*) left the game",
+    "REGEX_PLAYER_JOIN" : "\\[Server thread\\/INFO\\] \\[minecraft\\/DedicatedServer\\]: (.*) joined the game",
+    "REGEX_PLAYER_LEAVE" : "\\[Server thread\\/INFO\\] \\[minecraft\\/DedicatedServer\\]: (.*) left the game",
     "DEBUG": false
 }
