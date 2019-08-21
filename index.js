@@ -191,8 +191,9 @@ shulker.on('ready', function () {
 
     // player joins
     else if (joinRe.test(body)) {
-      const username = fixMCText(bodymatch[1])
+      console.log("JOINED!")
 
+      const username = fixMCText(bodymatch[1])
       if (debug) {
         console.log('[Debug]:c' + username + ' has connected to the server')
       }
@@ -208,6 +209,8 @@ shulker.on('ready', function () {
 
     // player leaves
     else if (leaveRe.test(body)) {
+
+      console.log("LEFT!")
       const username = fixMCText(bodymatch[1])
 
       if (debug) {
