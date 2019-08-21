@@ -189,7 +189,8 @@ shulker.on('message', function (message) {
     if (message.author.id !== shulker.user.id) {
       if (message.attachments.length) {
         // skip images/attachments
-        // TODO: add a "<media attached>"
+        // TODO: make "<media attached>" formatted
+        message = message + "<media attached>"
         return
       }
       const client = new Rcon(c.MINECRAFT_SERVER_RCON_IP, c.MINECRAFT_SERVER_RCON_PORT) // create rcon client
